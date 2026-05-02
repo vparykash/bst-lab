@@ -158,6 +158,14 @@ static Node* remove_single_child_nodes(Node* root) {
     return root;
 }
 
+static void delete_tree(Node* root) {
+    if (!root) return;
+    delete_tree(root->right);
+    delete_tree(root->left);
+    printf("  Freeing node [%d] %s\n", root->code, root->message);
+    free(root);
+}
+
 
 int main() {
     const char* files[] = { "data1.txt", "data2.txt" };
@@ -186,6 +194,11 @@ int main() {
 
         printf("\n--- Updated visual tree ---\n");
         print_tree_visual(root, 0);
+
+        printf("\n--- Deleting tree (right to left) ---\n");
+        delete_tree(root);
+        printf("Tree deleted.\n");
     }
+
     return 0;
 }
