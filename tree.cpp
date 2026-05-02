@@ -65,6 +65,18 @@ static void print_tree_visual(const Node* root, int depth) {
     print_tree_visual(root->left, depth + 1);
 }
 
+static void search_by_code(const Node* root, int target) {
+    const Node* cur = root;
+    while (cur) {
+        if (target == cur->code) {
+            printf("Found code %d: %s\n", cur->code, cur->message);
+            return;
+        }
+        cur = (target < cur->code) ? cur->left : cur->right;
+    }
+    printf("Code %d not found in the tree.\n", target);
+}
+
 int main() {
     const char* files[] = { "data1.txt", "data2.txt" };
     for (int f = 0; f < 2; f++) {
@@ -78,7 +90,13 @@ int main() {
         printf("\n--- Visual tree ---\n");
         print_tree_visual(root, 0);
 
-        /* TODO: search, remove, delete */
+        printf("\n--- Search by code ---\n");
+        printf("Enter code to search: ");
+        int target;
+        scanf_s("%d", &target);
+        search_by_code(root, target);
+
+        /* TODO: remove, delete */
         (void)root;
     }
     return 0;
