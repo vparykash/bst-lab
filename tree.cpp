@@ -50,16 +50,36 @@ static Node* build_from_file(const char* filename) {
     return root;
 }
 
+static void print_inorder(const Node* root) {
+    if (!root) return;
+    print_inorder(root->left);
+    printf("  [%4d]  %s\n", root->code, root->message);
+    print_inorder(root->right);
+}
+
+static void print_tree_visual(const Node* root, int depth) {
+    if (!root) return;
+    print_tree_visual(root->right, depth + 1);
+    for (int i = 0; i < depth; i++) printf("        ");
+    printf("[%d]\n", root->code);
+    print_tree_visual(root->left, depth + 1);
+}
+
 int main() {
-    Node* root = build_from_file("data1.txt");
-    if (root == NULL) {
-        printf("Error: tree is empty\n");
-        return 1;
+    const char* files[] = { "data1.txt", "data2.txt" };
+    for (int f = 0; f < 2; f++) {
+        printf("\n=== Dataset: %s ===\n", files[f]);
+        Node* root = build_from_file(files[f]);
+        if (!root) continue;
+
+        printf("\n--- In-order traversal ---\n");
+        print_inorder(root);
+
+        printf("\n--- Visual tree ---\n");
+        print_tree_visual(root, 0);
+
+        /* TODO: search, remove, delete */
+        (void)root;
     }
-
-    printf("Tree built successfully from data1.txt\n");
-
-    /* todo: print, search, remove, delete */
-    (void)root;
     return 0;
 }
