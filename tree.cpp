@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define MSG_LEN 64
+#define STACK_CAP 32
 
 typedef struct Node {
     int code;
@@ -10,6 +11,28 @@ typedef struct Node {
     struct Node* left;
     struct Node* right;
 } Node;
+
+typedef struct {
+    Node* data[STACK_CAP];
+    int top;
+} Stack;
+
+static void stack_init(Stack* s) {
+    s->top = -1;
+}
+
+static int stack_empty(const Stack* s) {
+    return s->top < 0;
+}
+
+static void stack_push(Stack* s, Node* n) {
+    if (s->top < STACK_CAP - 1)
+        s->data[++(s->top)] = n;
+}
+
+static Node* stack_pop(Stack* s) {
+    return stack_empty(s) ? NULL : s->data[(s->top)--];
+}
 
 static Node* create_node(int code, const char* msg) {
     Node* n = (Node*)malloc(sizeof(Node));
@@ -77,6 +100,65 @@ static void search_by_code(const Node* root, int target) {
     printf("Code %d not found in the tree.\n", target);
 }
 
+static int has_one_child(const Node* n) {
+    return (n->left != NULL) ^ (n->right != NULL);
+}
+
+static Node* delete_one_child_node(Node* root, int code) {
+    Node* parent = NULL, *cur = root;
+    while (cur && cur->code != code) {
+        parent = cur;
+        cur = (code < cur->code) ? cur->left : cur->right;
+    }
+    if (!cur) return root;
+    Node* child = cur->left ? cur->left : cur->right;
+    if (!parent) {
+        free(cur);
+        return child;
+    }
+    if (parent->left == cur)
+        parent->left = child;
+    else
+        parent->right = child;
+    free(cur);
+    return root;
+}
+
+static Node* remove_single_child_nodes(Node* root) {
+    if (!root) return NULL;
+    int codes[STACK_CAP];
+    int count = 0;
+    Stack s;
+    stack_init(&s);
+    Node* cur = root;
+
+    while (cur || !stack_empty(&s)) {
+        while (cur) {
+            stack_push(&s, cur);
+            cur = cur->left;
+        }
+        cur = stack_pop(&s);
+        if (has_one_child(cur) && count < STACK_CAP)
+            codes[count++] = cur->code;
+        cur = cur->right;
+    }
+
+    if (count == 0) {
+        printf("No nodes with exactly one child found.\n");
+        return root;
+    }
+
+    printf("Nodes with exactly one child (to be removed):\n");
+    for (int i = 0; i < count; i++)
+        printf("  Code: %d\n", codes[i]);
+
+    for (int i = 0; i < count; i++)
+        root = delete_one_child_node(root, codes[i]);
+
+    return root;
+}
+
+
 int main() {
     const char* files[] = { "data1.txt", "data2.txt" };
     for (int f = 0; f < 2; f++) {
@@ -96,8 +178,14 @@ int main() {
         scanf_s("%d", &target);
         search_by_code(root, target);
 
-        /* TODO: remove, delete */
-        (void)root;
+        printf("\n--- Remove nodes with exactly one child ---\n");
+        root = remove_single_child_nodes(root);
+
+        printf("\n--- Tree after removal (in-order) ---\n");
+        print_inorder(root);
+
+        printf("\n--- Updated visual tree ---\n");
+        print_tree_visual(root, 0);
     }
     return 0;
 }
