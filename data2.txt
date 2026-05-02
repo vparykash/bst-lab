@@ -1,0 +1,15 @@
+100 Continue
+200 OK
+150 PartialContent
+300 MultipleChoices
+250 NoContent
+400 BadRequest
+350 PermanentRedirect
+500 InternalServerError
+450 MethodNotAllowed
+600 NotImplemented
+550 RequestTimeout
+700 ServiceUnavailable
+650 VariantAlsoNegotiates
+800 NetworkAuthRequired
+750 LoopDetected

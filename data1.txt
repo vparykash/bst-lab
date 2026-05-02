@@ -1,0 +1,15 @@
+500 ServerInternalError
+250 BadRequest
+750 ServiceUnavailable
+125 Unauthorized
+375 NotFound
+625 Conflict
+875 GatewayTimeout
+60 Continue
+190 Accepted
+310 MultipleChoices
+430 Gone
+560 UnsupportedMediaType
+690 TooManyRequests
+800 NotImplemented
+950 NetworkAuthRequired
